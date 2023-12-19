@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:weatherjourney/firebase_options.dart';
 import 'package:weatherjourney/src/app.dart';
 import 'package:weatherjourney/src/features/authentication/application/services/apple_sign_in_available_service.dart';
 import 'package:weatherjourney/src/localization/string_hardcoded.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
@@ -15,6 +17,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   tz.initializeTimeZones();
   // turn off the # in the URLs on the web
   usePathUrlStrategy();
@@ -26,6 +29,15 @@ Future<void> main() async {
   // * Register services
   container.read(appleSignInAvailableServiceProvider);
   //container.read(authRepositoryProvider).signOut();
+
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   runApp(
     UncontrolledProviderScope(container: container, child: const MyApp()),
