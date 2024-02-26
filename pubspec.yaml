@@ -29,7 +29,7 @@ dependencies:
   google_sign_in: ^6.1.4
   flutter_svg: ^2.0.7
   flutter_launcher_icons: ^0.13.1
-  url_launcher: ^6.1.14
+  url_launcher: ^6.2.5
   firebase_crashlytics: ^3.3.0
   firebase_performance: ^0.9.3+8
   geolocator: ^10.1.0
